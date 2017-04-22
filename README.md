@@ -26,3 +26,5 @@ Configuration
 -----------
 
 Hyperlog requires minimal configuration, but you will want to provide (at minimum) a url for it to 'listen' to. This should be your station's public mountpoint (if using Icecast/Shoutcast). It must also be MP3.
+=======
+By default, the browser interface will then be accessible from localhost:3000.
