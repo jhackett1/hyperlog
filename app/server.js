@@ -14,6 +14,11 @@ var offset = settings.logOffset;
 // Create the writable stream for the output
 var wstream = fs.createWriteStream('app/public/recordings/output.mp3');
 
+// Check if the recordings directory exists, and create it if not
+if (!fs.existsSync('./recordings')) {
+  fs.mkdirSync('./recordings');
+}
+
 //Get the data, save it to file and log it to the console
 http.get(url, function(response) {
   // Save the data to a stream
