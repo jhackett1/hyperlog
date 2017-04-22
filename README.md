@@ -16,8 +16,8 @@ Hyperlog is based on node.js, so you'll need to install that and npm first. It r
 
 Once you've downloaded this archive, run the terminal command
 
-  npm install
+    npm install
 
 To run the server, go to the app directory and say
 
-  node server
+    node server
