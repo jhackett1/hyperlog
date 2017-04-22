@@ -14,7 +14,7 @@ var offset = settings.logOffset;
 // Create the writable stream for the output
 var wstream = fs.createWriteStream('app/public/recordings/output.mp3');
 
-// Check if the recordings directory exists, and create it if not
+// Check if the recordings directory exists, otherwise create it
 if (!fs.existsSync('./recordings')) {
   fs.mkdirSync('./recordings');
 }
