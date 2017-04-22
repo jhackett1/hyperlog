@@ -21,3 +21,5 @@ Once you've downloaded this archive, run the terminal command
 To run the server, go to the app directory and say
 
     node server
+
+By default, the browser interface will then be accessible from localhost:3000.
