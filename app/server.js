@@ -12,7 +12,7 @@ var metadata = require('./metadata.json');
 
 // Load in vars from the settings file
 var url = settings.streamUrl;
-var targetDuration = settings.logDuration*60; //In milliseconds
+var targetDuration = settings.logDuration*1000; //In milliseconds
 var archiveLength = settings.archiveLength;
 var stationName = settings.stationName.toLowerCase();
 
@@ -124,10 +124,6 @@ function record(duration){
 }
 
 
-// app.set('view engine', 'ejs');
-// app.set('views', 'app/views');
-
-
 app.get("/", function(req, res) {
     res.send("Hello World fhsjak");
 });
@@ -153,11 +149,14 @@ function init(){
   // Make an initial recording until the top of the hour
   record(initialDuration);
   console.log('Will record for '+ initialDuration/1000 +" seconds")
-  // Then, begin recurring hourly recordings
+  // Wait until the top of the hour, then execute hourly recordings
   setTimeout(function(){
-    record(targetDuration);
+    // Make an hourly recording every hour
+    setInterval(function(){
+      record(targetDuration);
+    },targetDuration)
   },initialDuration);
 }
 
-// Do ALL THE THINGS
+// DO ALL THE THINGS
 init();
