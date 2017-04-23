@@ -2,9 +2,6 @@
   "recordActive":true,
   "stationName":"SmokeRadio",
   "streamUrl":"http://streaming.smokeradio.co.uk:8080/campus",
-  "directory":"./app/public/recordings/output.mp3",
   "logDuration":"3600",
-  "archiveLength":"10",
-  "adminUser":"smc",
-  "adminPass":"SmokeAdmin123!"
+  "archiveLength":"10"
 }

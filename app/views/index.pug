@@ -1,0 +1,62 @@
+html
+    head
+      title
+        = station
+        |  | Hyperlog
+      link(rel="icon",href="favicon.jpg",type="image/x-icon")
+      link(rel="stylesheet",href="style.css",type="text/css")
+      link(rel="stylesheet",href="font-awesome-4.7.0/css/font-awesome.min.css",type="text/css")
+    body
+      header
+          h1 Smoke Radio
+          div
+            h2 Hyperlog
+            img(src="/img/logo.svg")
+      nav
+        ul
+          li.current
+            a(href="/") Home
+          li
+            a(href="/") Statistics
+      main
+        section.panel#status
+          h3 Quick status
+          article.content
+            ul
+              li
+                i.fa.fa-microphone
+                span XX
+                | recording
+              li 
+                i.fa.fa-server
+                span XX
+                | server uptime
+
+              li 
+                i.fa.fa-hdd-o
+                span XX
+                | of disk space used
+              li 
+                i.fa.fa-clock-o
+                span XX
+                | hours archived
+        section.panel#recordings
+          h3 Recordings
+          article.content
+            ul
+              each val in recordings
+                - var url = "recordings/" + val.fileName;
+                li
+                  h5 Recorded on 
+                    = val.txDate
+                    |  at 
+                    = val.txTime
+                  h4 
+                    span= val.id
+                    a(download=val.fileName,href="/" + url)= val.showName
+                  p #{author}
+      footer
+        p Hyperlog is a 24/7 audio logger for online radio stations. Developed by 
+          a(href="http://github.com/jhackett1/hyperlog") Joshua Hackett
+          | .
+        
