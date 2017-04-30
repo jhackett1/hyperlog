@@ -1,9 +1,7 @@
-
-
 //Get the necessary modules
 var express = require('express');
-
 var pug = require('pug');
+var njds = require('nodejs-disks');
 // Get the right express method
 var app = express();
 // Get the settings data file
@@ -18,16 +16,27 @@ require('./recorder.js');
 app.set('views', __dirname+'/views');
 app.set('view engine', 'pug');
 
+var usedSpace = "";
+
+// Return the percentage used of the current drive
+njds.drives(
+  function (err, drives) {
+    njds.drivesDetail(drives, function (err, data) {
+      usedSpace = data[0].usedPer + "%";
+    });
+  }
+)
+
+
 // Routes
 app.get("/", function(req, res) {
-
-
-
     res.render('index', {
       "station":settings.stationName,
-      "recordings":metadata.recordings
+      "recordings":metadata.recordings,
+      "usedSpace":usedSpace
     });
 });
+
 
 app.get("/api", function(req, res) {
     // Create object to hold data

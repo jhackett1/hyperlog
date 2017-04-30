@@ -3,6 +3,7 @@ html
       title
         = station
         |  | Hyperlog
+      meta(name="viewport",content="width=device-width")
       link(rel="icon",href="favicon.jpg",type="image/x-icon")
       link(rel="stylesheet",href="style.css",type="text/css")
       link(rel="stylesheet",href="font-awesome-4.7.0/css/font-awesome.min.css",type="text/css")
@@ -17,7 +18,9 @@ html
           li.current
             a(href="/") Home
           li
-            a(href="/") Statistics
+            a(href="/admin") Statistics
+          li
+            a(href="/api") API
       main
         section.panel#status
           h3 Quick status
@@ -29,12 +32,12 @@ html
                 | recording
               li 
                 i.fa.fa-server
-                span XX
+                span Xx
                 | server uptime
 
               li 
                 i.fa.fa-hdd-o
-                span XX
+                span= usedSpace
                 | of disk space used
               li 
                 i.fa.fa-clock-o
@@ -53,7 +56,7 @@ html
                     = val.txTime
                   h4 
                     span= val.id
-                    a(download=val.fileName,href="/" + url)= val.showName
+                    a(download=val.fileName,href="/" + url) Recording
                   p #{author}
       footer
         p Hyperlog is a 24/7 audio logger for online radio stations. Developed by 
