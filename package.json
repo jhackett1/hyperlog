@@ -1,25 +1,18 @@
 {
-  "name": "hyperlog",
+  "name": "hyperlog-core",
   "version": "1.0.0",
-  "description": "A cloud-based 24/7 logger for radio stations.",
-  "main": "logger.js",
-  "dependencies": {
-    "express": "^4.15.2",
-    "express-handlebars": "^3.0.0",
-    "nodejs-disks": "^0.2.1",
-    "pug": "^2.0.0-beta.12"
-  },
-  "devDependencies": {},
+  "description": "",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "radio",
-    "live",
-    "icecast",
-    "audio",
-    "mp3"
-  ],
-  "author": "Joshua Hackett",
-  "license": "ISC"
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.15.2",
+    "node-cron": "^1.1.3",
+    "nodejs-disks": "^0.2.1",
+    "pug": "^2.0.0-beta.12",
+    "util": "^0.10.3"
+  }
 }

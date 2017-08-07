@@ -1,0 +1,55 @@
+html
+    head
+      title Smoke Radio | Hyperlog
+      meta(name="viewport",content="width=device-width, initial-scale=1")
+      link(rel="icon",href="img/favicon.jpg",type="image/x-icon")
+      link(rel="stylesheet",href="css/style.css",type="text/css")
+      link(rel="stylesheet",href="font-awesome-4.7.0/css/font-awesome.min.css",type="text/css")
+    body
+      header
+        img(src="img/logo.svg",alt="Smoke Radio | Hyperlog")
+        nav
+          ul
+            li
+              a(href="/")
+                i.fa.fa-microphone
+                p Recordings
+            li
+              a(href="/api")
+                i.fa.fa-code
+                p API
+            li.current
+              a(href="/manage")
+                i.fa.fa-cog
+                p Manage
+      main
+        section.panel#system
+          h3 System
+          article.content
+            ul.info
+              li
+                h5 Station time
+                p 0th December 2017 18:55:00
+              li
+                h5 System uptime
+                p=uptime
+              li
+                h5 Monitoring URL
+                p
+                  a(href=listenUrl)=listenUrl
+              li
+                h5 Used space on disk
+                p=usedSpace
+
+        section.panel#about
+          h3 About
+          article.content
+            p Hyperlog is a node.js-based 24/7 automatic audio and data logger for online radio stations. It makes hourly scheduled recordings from a specified MP3 webstream.
+                
+                
+      footer
+        p Hyperlog is a 24/7 audio logger for online radio stations. Developed by 
+          a(href="http://github.com/jhackett1/hyperlog") Joshua Hackett
+          | .
+        
+    script(src="js/client.js")

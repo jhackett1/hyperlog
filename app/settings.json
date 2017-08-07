@@ -1,6 +1,5 @@
 {
-  "recordActive":true,
-  "stationName":"SmokeRadio",
-  "streamUrl":"http://streaming.smokeradio.co.uk:8080/campus",
-  "archiveLength":"100"
+  "stationName": "smokeradio",
+  "listenUrl": "http://77.68.10.108:8080/mobile",
+  "archiveLimit": 120
 }

@@ -1,65 +1,86 @@
 html
     head
-      title
-        = station
-        |  | Hyperlog
-      meta(name="viewport",content="width=device-width")
-      link(rel="icon",href="favicon.jpg",type="image/x-icon")
-      link(rel="stylesheet",href="style.css",type="text/css")
+      title Smoke Radio | Hyperlog
+      meta(name="viewport",content="width=device-width, initial-scale=1")
+      link(rel="icon",href="img/favicon.jpg",type="image/x-icon")
+      link(rel="stylesheet",href="css/style.css",type="text/css")
       link(rel="stylesheet",href="font-awesome-4.7.0/css/font-awesome.min.css",type="text/css")
     body
       header
-          h1 Smoke Radio
-          div
-            h2 Hyperlog
-            img(src="/img/logo.svg")
-      nav
-        ul
-          li.current
-            a(href="/") Home
-          li
-            a(href="/admin") Statistics
-          li
-            a(href="/api") API
-      main
-        section.panel#status
-          h3 Quick status
-          article.content
-            ul
-              li
+        img(src="img/logo.svg",alt="Smoke Radio | Hyperlog")
+        nav
+          ul
+            li.current
+              a(href="/")
                 i.fa.fa-microphone
-                span XX
-                | recording
-              li 
-                i.fa.fa-server
-                span Xx
-                | server uptime
-
-              li 
-                i.fa.fa-hdd-o
-                span= usedSpace
-                | of disk space used
-              li 
-                i.fa.fa-clock-o
-                span XX
-                | hours archived
+                p Recordings
+            li
+              a(href="/api")
+                i.fa.fa-code
+                p API
+            li
+              a(href="/manage")
+                i.fa.fa-cog
+                p Manage
+      main
+        section.panel#find
+          h3 Quick find
+          article.content
+            form
+              input(type="date",id="date")
+              input(type="time",id="time")
+              input(type="submit",id="submit",value="Search")
+              i.fa.fa-spinner#spinner2
+          div.result-container
         section.panel#recordings
           h3 Recordings
           article.content
-            ul
+            div#spinner
+              i.fa.fa-spinner
+            ul(id="recordings")
               each val in recordings
-                - var url = "recordings/" + val.fileName;
-                li
-                  h5 Recorded on 
-                    = val.txDate
-                    |  at 
-                    = val.txTime
-                  h4 
-                    span= val.id
-                    a(download=val.fileName,href="/" + url) Recording
-                  p #{author}
+                - var audioUrl = "/recordings/" + val.fileName + ".mp3";
+                li(class="recording", id= val.fileName)
+                  if val.txTime.substr(0,2)<17
+                    h5.daytime
+                      | Recorded on 
+                      = val.txDate
+                      |  at 
+                      = val.txTime
+                  else
+                    h5.specialist
+                      | Recorded on 
+                      = val.txDate
+                      |  at 
+                      = val.txTime
+                  h4= val.showName
+                  p= val.showDesc
+                  
+                  audio(controls)
+                    source(src= audioUrl)
+                  div.buttons
+                    a.btn.grey(download, href= audioUrl)
+                      i.fa.fa-download
+                      | Download
+                    if val.permalink
+                      a.btn(target="blank",href= val.permalink) Show profile   
+
+            div.pagination
+              a.btn.unclickable(id="previous-page")
+                i.fa.fa-caret-left
+                | Previous
+              a.btn(id="next-page")
+                | Next
+                i.fa.fa-caret-right
+          
+                
+                
+                
+                
+                
       footer
         p Hyperlog is a 24/7 audio logger for online radio stations. Developed by 
           a(href="http://github.com/jhackett1/hyperlog") Joshua Hackett
           | .
         
+    script(src="js/client.js")

@@ -1,0 +1,315 @@
+@keyframes spin {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif; }
+  * a.btn.grey {
+    border: 2px solid #404040;
+    color: #404040; }
+  * a.btn, * input[type="submit"] {
+    display: inline-block;
+    min-width: 100px;
+    border: 2px solid #8C2433;
+    background-color: #efefef;
+    padding: 5px 20px;
+    text-align: center;
+    color: #8C2433;
+    text-decoration: none;
+    font-weight: 100;
+    font-size: 15px;
+    transition: 0.1s;
+    cursor: pointer; }
+  * a.btn:hover, * input[type="submit"]:hover {
+    background-color: #8C2433;
+    color: #fafafa; }
+  * a.btn.grey:hover {
+    background-color: #404040;
+    color: #fafafa !important; }
+
+header {
+  position: fixed;
+  left: 0;
+  height: 100%;
+  width: 150px;
+  background-color: #404040;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: center;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4); }
+  header img {
+    width: 80px;
+    margin: 40px auto; }
+  header nav ul {
+    list-style: none; }
+    header nav ul li:hover a {
+      background-color: #505050; }
+    header nav ul li:last-of-type:hover a i {
+      transform: scale(2, 2) rotate(360deg);
+      transition: 2s; }
+    header nav ul li.current a {
+      background-color: #505050; }
+    header nav ul li {
+      width: 100%;
+      display: block; }
+      header nav ul li a {
+        color: #dfdfdf;
+        text-decoration: none;
+        font-weight: 100;
+        display: block;
+        padding: 25px; }
+        header nav ul li a i {
+          margin-bottom: 20px;
+          transform: scale(2, 2) rotate(0deg); }
+
+footer {
+  text-align: right;
+  padding: 20px;
+  font-size: 0.7em;
+  font-style: italic;
+  color: #969696;
+  margin: 20px;
+  margin-left: 150px; }
+  footer a {
+    color: #8C2433; }
+
+main {
+  margin-left: 150px;
+  padding: 20px; }
+  main section.panel.collapsed h3::after {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid #fafafa;
+    transform: rotate(180deg); }
+  main section.panel.collapsed article.content {
+    height: 0px;
+    opacity: 0;
+    padding: 0px 20px; }
+  main section.panel {
+    margin: 20px;
+    background-color: #efefef;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative; }
+    main section.panel h3 {
+      padding: 10px;
+      background-color: #404040;
+      color: #fafafa;
+      font-weight: 100;
+      cursor: pointer;
+      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      position: relative; }
+    main section.panel h3::after {
+      content: "";
+      display: block;
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      width: 0;
+      transition: 0.2s;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 5px solid #fafafa; }
+    main section.panel article.content {
+      padding: 20px;
+      transition: 0.2s; }
+  main section#find div.result-container {
+    position: relative; }
+  main section#find div.result-container.open {
+    margin: 20px; }
+    main section#find div.result-container.open i.fa-close {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      color: #969696;
+      cursor: pointer;
+      font-size: 1.5em; }
+    main section#find div.result-container.open h4 {
+      font-size: 1.5em;
+      font-weight: 400;
+      color: #8C2433;
+      padding-top: 20px;
+      border-top: 0.5px solid #dfdfdf; }
+      main section#find div.result-container.open h4 span {
+        color: #969696;
+        font-weight: 100; }
+    main section#find div.result-container.open p {
+      margin: 10px 0px;
+      color: #404040;
+      font-size: 0.9em;
+      font-weight: 100; }
+    main section#find div.result-container.open audio {
+      margin: 10px 0px; }
+    main section#find div.result-container.open div.buttons {
+      margin-top: 10px; }
+      main section#find div.result-container.open div.buttons a.btn {
+        margin-right: 5px; }
+        main section#find div.result-container.open div.buttons a.btn i {
+          margin-right: 5px; }
+  main section#find article.content {
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+  main section#find form input {
+    margin: 10px 0px; }
+  main section#find form input[type="date"], main section#find form input[type="time"] {
+    border: none;
+    margin-right: 10px;
+    padding: 5px;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: #404040;
+    background-color: #fafafa; }
+  main section#find form i#spinner2 {
+    animation-name: spin;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    text-align: center;
+    font-size: 1.5em;
+    margin-left: 15px;
+    color: #969696;
+    visibility: hidden; }
+  main section#find form i#spinner2.show {
+    visibility: visible; }
+  main section#recordings article.content, main section#recordings article.content {
+    padding: 0px; }
+    main section#recordings article.content div#spinner.show, main section#recordings article.content div#spinner.show {
+      display: flex; }
+    main section#recordings article.content div#spinner, main section#recordings article.content div#spinner {
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      display: none; }
+      main section#recordings article.content div#spinner i, main section#recordings article.content div#spinner i {
+        animation-name: spin;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        text-align: center;
+        font-size: 3em;
+        color: #969696; }
+  main section#recordings div.pagination, main section#recordings div.pagination {
+    margin: 40px 20px 20px 20px; }
+    main section#recordings div.pagination a.btn.unclickable, main section#recordings div.pagination a.btn.unclickable {
+      pointer-events: none;
+      opacity: 0.3; }
+    main section#recordings div.pagination a.btn, main section#recordings div.pagination a.btn {
+      margin-right: 10px; }
+      main section#recordings div.pagination a.btn i, main section#recordings div.pagination a.btn i {
+        margin: 0px 5px; }
+  main section#recordings ul, main section#recordings ul {
+    list-style-type: none; }
+    main section#recordings ul h2, main section#recordings ul h2 {
+      color: #969696;
+      margin: 20px;
+      font-weight: 100; }
+    main section#recordings ul li.selected, main section#recordings ul li.selected {
+      transition: 0.1s;
+      background: -moz-linear-gradient(left, #efefef 0%, #dbdbdb 100%);
+      background: -webkit-linear-gradient(left, #efefef 0%, #dbdbdb 100%);
+      background: linear-gradient(to right, #efefef 0%, #dbdbdb 100%);
+      cursor: auto; }
+      main section#recordings ul li.selected h4, main section#recordings ul li.selected h4 {
+        font-size: 2em; }
+      main section#recordings ul li.selected audio, main section#recordings ul li.selected audio {
+        display: block;
+        opacity: 1; }
+      main section#recordings ul li.selected div.buttons, main section#recordings ul li.selected div.buttons {
+        margin: 20px 0px;
+        display: block;
+        opacity: 1; }
+        main section#recordings ul li.selected div.buttons a.btn:first-of-type, main section#recordings ul li.selected div.buttons a.btn:first-of-type {
+          border-color: #404040;
+          color: #404040; }
+        main section#recordings ul li.selected div.buttons a.btn, main section#recordings ul li.selected div.buttons a.btn {
+          margin-right: 10px; }
+          main section#recordings ul li.selected div.buttons a.btn i, main section#recordings ul li.selected div.buttons a.btn i {
+            margin-right: 5px; }
+    main section#recordings ul li, main section#recordings ul li {
+      padding: 20px 20px 0px 20px;
+      border-bottom: 0.5px solid #dfdfdf;
+      cursor: pointer; }
+      main section#recordings ul li div.buttons, main section#recordings ul li audio, main section#recordings ul li div.buttons, main section#recordings ul li audio {
+        display: none;
+        opacity: 0;
+        transition: 0.1s; }
+      main section#recordings ul li h5.specialist::before, main section#recordings ul li h5.specialist::before {
+        content: "Specialist";
+        margin-right: 10px;
+        text-transform: uppercase;
+        padding: 5px;
+        background-color: #29B489;
+        color: #fafafa;
+        font-size: 0.7em; }
+      main section#recordings ul li h5.daytime::before, main section#recordings ul li h5.daytime::before {
+        content: "Daytime";
+        margin-right: 10px;
+        text-transform: uppercase;
+        padding: 5px;
+        background-color: #FFB400;
+        color: #fafafa;
+        font-size: 0.7em; }
+      main section#recordings ul li h5, main section#recordings ul li h5 {
+        font-weight: 100;
+        color: #969696; }
+      main section#recordings ul li h4, main section#recordings ul li h4 {
+        font-size: 1.5em;
+        margin: 10px 0px;
+        font-weight: 400;
+        transition: 0.1s;
+        color: #8C2433; }
+      main section#recordings ul li p, main section#recordings ul li p {
+        font-weight: 100;
+        color: #404040;
+        font-size: 0.9em;
+        margin-bottom: 20px; }
+  main section#status p, main section#system p, main section#about p {
+    color: #969696; }
+  main section#status ul.info li, main section#system ul.info li, main section#about ul.info li {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px; }
+    main section#status ul.info li h5, main section#system ul.info li h5, main section#about ul.info li h5 {
+      color: #404040;
+      width: 33%; }
+    main section#status ul.info li p, main section#system ul.info li p, main section#about ul.info li p {
+      color: #969696;
+      width: 60%;
+      text-align: right; }
+    main section#status ul.info li a, main section#system ul.info li a, main section#about ul.info li a {
+      color: #8C2433; }
+
+@media screen and (max-width: 700px) {
+  a.btn.grey {
+    display: none; }
+  header {
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    width: 100%;
+    height: 70px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: hidden; }
+    header img {
+      width: 50px;
+      margin: 10px; }
+    header nav ul {
+      display: flex;
+      flex-direction: row; }
+      header nav ul li p {
+        display: none; }
+  main, footer {
+    margin-left: 0px;
+    margin-top: 70px;
+    padding: 5px; } }

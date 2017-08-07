@@ -1,136 +1,169 @@
-//Get the necessary modules
-var http = require('http');
-var fs = require('fs');
+// Get the modules
+const fs = require('fs');
+const http = require('http');
+const https = require('https');
+const cron = require('node-cron');
 
-// Get the settings data file
+// Get the local settings file in
 var settings = require('./settings.json');
-// Get the recordings metadata file
-var metadata = require('./metadata.json');
 
-// Load in vars from the settings file
-var url = settings.streamUrl;
-var archiveLength = settings.archiveLength;
-var stationName = settings.stationName.toLowerCase();
+// Some local constants
+const station = settings.stationName;
+const url = settings.listenUrl;
+const recDir = './app/public/recordings/';
+const metadataFile = './app/metadata.json';
+// Save a five-day rolling log
+const archiveLimit = settings.archiveLimit;
 
-// Function to clear out old files if the number of recordings is greater than the number specified in the settings
-function deleteOldFiles(){
-  // If the number of elements in the metadata array is more than 750, delete the oldest/first file
-  if (metadata.recordings.length > archiveLength) {
-    // Get the filename of the first/oldest file from the object
-    var fileName = metadata.recordings[0].fileName;
-    var deletePath = './app/public/recordings/'+fileName;
-    // Perform the deletion
-    fs.unlink(deletePath, function(){
-      console.log("More than " + archiveLength + " items in archive. Deleting oldest: "+ fileName);
-    })
-    // Pop the first object off the array for good measure
-    metadata.recordings.shift();
-    var newData = JSON.stringify(metadata);
-    // // And write the new data to the file
-    fs.writeFile('./app/metadata.json',newData, function(err){
-        if (err) throw err;
-    });
+// Do the recordings directory and metadata file exist and parse properly? If not, create them
+function checkIntegrity(){
+  // Recording directory
+  if (!fs.existsSync(recDir)) {
+    console.log('Recordings directory does not exist. Creating.');
+    fs.mkdirSync(recDir, 0744);
   }
+  initialMeta = JSON.stringify({"recordings":[]});
+  // Metadata file
+  if (!fs.existsSync(metadataFile)) {
+    console.log('Metadata file does not exist. Creating.');
+    fs.writeFileSync(metadataFile, initialMeta)
+  }
+  //Check whether metadata file is valid JSON and overwrite it if not
+  try {
+    var data = fs.readFileSync(metadataFile);
+    JSON.parse(data);
+  } catch(e) {
+    console.log("Metadata file corrupted. Regenerating.")
+    fs.writeFileSync(metadataFile, initialMeta)
+  }
+
 }
 
-// Helper function to format the date
+// Delete the oldest recording if the directory has more files than the specified limit
+function cleanUp(fileToDelete){
+  console.log(fileToDelete);
+  // And delete the corresponding file
+  fs.unlink(recDir + fileToDelete, function(){
+    console.log("Deleted oldest file: "+ fileToDelete);
+  })
+}
+
+// Take the input data and write it to the metadata file
+function writeMeta(fileName){
+  // Read the metadata file into memory
+  fs.readFile(metadataFile, (err, data) => {
+    // Handle errors
+    if (err) throw err;
+    // Parse the existing metadata into memory
+    var existingMetadata = JSON.parse(data);
+
+    if (existingMetadata.recordings.length>archiveLimit) {
+      // Remove the first element from the array
+      var recToDelete = existingMetadata.recordings.shift();
+      cleanUp(recToDelete.fileName);
+    }
+
+    // Split the filename into an array
+    var parsedData = fileName.split("_");
+    //Properly format the date string
+    var timeString = parsedData[1].substring(0,2) + ":" + parsedData[1].substring(2,4) + ":" + parsedData[1].substring(4,6);
+    var dateString = parsedData[2].substring(0,2) + "/" + parsedData[2].substring(2,4) + "/" + parsedData[2].substring(4,8);
+    // Query the Marconi API to fill in show names, descriptions and production codes
+    https.get('https://smoke.media/wp-json/shows/now_playing', function(res2){
+      let rawData = '';
+      res2.on('data', (chunk) => { rawData += chunk; });
+      res2.on('end', () => {
+
+        try {
+          const marconiResponse = JSON.parse(rawData);
+          // Represent the array in an object
+          if (marconiResponse.success == 0) {
+            var newRecording = {
+              "fileName": fileName,
+              "txTime": timeString,
+              "txDate": dateString,
+              "showName": "Jukebox",
+              "showDesc": "Nonstop music",
+              "permalink": false
+            }
+          } else {
+            var newRecording = {
+              "fileName": fileName,
+              "txTime": timeString,
+              "txDate": dateString,
+              "showName": marconiResponse.show.title,
+              "showDesc": marconiResponse.show.desc,
+              "permalink": marconiResponse.show.permalink
+            }
+          }
+          // Append that object to the metadata file
+          existingMetadata.recordings.push(newRecording);
+          var newMetadata = JSON.stringify(existingMetadata);
+          fs.writeFile(metadataFile,newMetadata,function(){
+            console.log("Metadata file updated!");
+          })
+        } catch (e) {
+          console.error(e.message);
+        }
+      });
+    });
+  });
+}
+
+// Helper function to format dates
 function pad(n){return n<10 ? '0'+n : n}
 
-// Record and store a single log hour
-function record(duration){
-  // A blank default object to store the metadata
-  var meta = {
-    "id":0,
-    "txTime":"",
-    "txDate":"",
-    "fileName":""
-  };
-  // Calculate ID by iterating ID of previous file
-  if (metadata.recordings[0]) {
-    var id = metadata.recordings[metadata.recordings.length-1].id+1;
-  } else {
-    var id = 1;
-  }
-  // Get the current server date/time
+// Function which returns a filename for a recording
+function buildFilename(){
   var now = new Date();
-  // Populate the meta object
-  meta.id = id;
-  meta.txTime = String(pad(now.getHours())) + String(pad(now.getMinutes())) + String(pad(now.getSeconds()));
-  meta.txDate = String(pad(now.getDate())) + String(pad(now.getMonth()+1)) + String(now.getFullYear());
-  meta.fileName = stationName + "_" + meta.txTime + "_" + meta.txDate + ".mp3";
-  // Append this object to the existing metadata
-  metadata.recordings.push(meta);
-  var newData = JSON.stringify(metadata);
-  // And overwrite the existing metadata file with the new data
-  fs.writeFile('./app/metadata.json',newData, function(err){
-      if (err) throw err;
+  var fileName =  station + "_" +
+                  pad(now.getHours()) +
+                  pad(now.getMinutes()) +
+                  pad(now.getSeconds()) + "_" +
+                  pad(now.getDate()) +
+                  pad(now.getMonth()+1) +
+                  pad(now.getFullYear());
+  return fileName;
+}
+
+// Record for specified duration
+function record(duration){
+  var fileName = buildFilename();
+  // Create the file to write to
+  var writeStream = fs.createWriteStream(recDir + fileName +'.mp3');
+  // Make a request for the audio data
+  http.get(url, function (response) {
+    // Handle errors
+    response.on('error', console.error);
+    // Write the data to the stream
+    response.pipe(writeStream);
+    console.log('Now writing file ' + fileName + '.mp3 for ' + duration/1000 + ' seconds.');
+    writeMeta(fileName);
+    // Stop the stream after a delay
+    setTimeout(function(){
+      response.unpipe(writeStream);
+      writeStream.end();
+      console.log('Finished writing file ' + fileName + '.mp3');
+    },duration);
   });
-  // Create the writable stream for the output, based on the filename calculated above
-  var wstream = fs.createWriteStream('app/public/recordings/' + meta.fileName);
-
-
-
-
-
-
-
-
-
-
-  //Get the data, save it to file and log it to the console
-  var record = http.get(url, function(res) {
-    var statusCode = res;
-    var contentType = res.headers['content-type'];
-    var error;
-    if (statusCode !== 200) {
-      error = new Error("Request failed. Status code: " + statusCode);
-    } else if (!/^audio\/mpeg/.test(contentType)){
-      error = new Error('Invalid content type. Expecting audio/mpeg but recieved' + contentType);
-    }
-    if (error) {
-      console.error(error.message);
-      res.resume();
-      return;
-    }
-    console.log("RECORDING COMMENCED ON FILE ID " + id);
-    res.pipe(wstream);
-    deleteOldFiles();
-    res.on('end', function(){
-      console.log('Recording paused');
-    })
-
-  }).on('error', function(e){
-    console.error('Gor error: ' + e.message);
-  })
-
-  // After a specified interval (usually one hour), stop the stream to split the files\
-  setTimeout(function(){
-    wstream.end();
-    console.log('TOP OF THE HOUR. FILE SPLIT.');
-    return;
-  },duration);
 }
 
-
-
+// Check environment and begin recording
 function initialise(){
-  // First, work out how many milliseconds are left until the top of the hour
-  var currentMinutes = new Date().getMinutes();
-  var currentSeconds = new Date().getSeconds();
-  var initialDur = 3600000-((currentMinutes*60)+currentSeconds)*1000;
-  // Now make an initial recording up until the top of the hour
-  record(5000);
-  // After the initial duration has passed, fire an hour long recording
-  setTimeout(function(){
-    // At the top of the hour, run this code
-    record(10000);
-    // Recurring hourly recordings thereafter
-    setInterval(function(){
-      record(10000);
-    },10000)
-  },5000)
+    // Check recordings dir exists
+    checkIntegrity();
+    // How many milliseconds are left until the top of the hour?
+    var currentMinutes = new Date().getMinutes();
+    var currentSeconds = new Date().getSeconds();
+    var initialDur = 3600000-((currentMinutes*60)+currentSeconds)*1000;
+    // Make the first recording up until the of the hour
+    record(initialDur);
+    // Run subsequent recordings on the top of the hour
+    cron.schedule('0 * * * *', function(){
+      record(60000);
+    });
+
 }
 
-
-
+// Do everything
 initialise();
