@@ -4,6 +4,8 @@ const http = require('http');
 const https = require('https');
 const cron = require('node-cron');
 
+const mixcloud = require('./mixcloud.js')
+
 // Get the local settings file in
 var settings = require('./settings.json');
 
@@ -94,6 +96,8 @@ function writeMeta(fileName){
               "showName": marconiResponse.show.title,
               "showDesc": marconiResponse.show.desc,
               "permalink": marconiResponse.show.permalink
+              // 'icon': marconiResponse.show.icon_thumb,
+              // 'genre': marconiResponse.show.genre
             }
           }
           // Append that object to the metadata file
@@ -144,6 +148,10 @@ function record(duration){
       response.unpipe(writeStream);
       writeStream.end();
       console.log('Finished writing file ' + fileName + '.mp3');
+
+      // Now the file is done, upload it to Mixcloud IF it is a show
+      processUpload('testing', fileName);
+
     },duration);
   });
 }
