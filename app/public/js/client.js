@@ -103,14 +103,12 @@ document.querySelectorAll('div.pagination a').forEach(function(button){
             if (result.permalink == false) {
               resultItem.innerHTML += `
                 <div class="buttons">
-                  <a class="btn grey"><i class="fa fa-star"></i>Pin</a>
                   <a class="btn" download href="/recordings/${result.fileName}.mp3"><i class="fa fa-download"></i>Download</a>
                 </div>
               `;
             } else {
               resultItem.innerHTML += `
                 <div class="buttons">
-                aa
                   <a class="btn" download href="/recordings/${result.fileName}.mp3"><i class="fa fa-download"></i>Download</a>
                   <a class="btn" href="${result.permalink}">Show profile</a>
                 </div>

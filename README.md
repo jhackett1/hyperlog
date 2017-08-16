@@ -7,7 +7,7 @@ Hyperlog keeps a rolling archive of your station's transmitted audio output to f
 
 Unlike traditional solutions, it does not need to be fed via a hardware audio input on the server, meaning that it is suitable for stations with minimal on-site infrastructure, or who use multiple studios in remote locations.
 
-Log files can be managed via a browser interface or a simple JSON API.
+Log files can be inspected via a browser interface or a simple JSON API.
 
 Installation
 -----------
@@ -26,5 +26,5 @@ Configuration
 -----------
 
 Hyperlog requires minimal configuration, but you will want to provide (at minimum) a url for it to 'listen' to. This should be your station's public mountpoint (if using Icecast/Shoutcast). It must also be MP3.
-=======
+
 By default, the browser interface will then be accessible from localhost:3000.

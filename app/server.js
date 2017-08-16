@@ -1,3 +1,5 @@
+// SERVER HOSTS STATIC ASSETS, API AND UI
+
 // Get the modules
 const express = require('express');
 const fs = require('fs');
@@ -7,11 +9,8 @@ const njds = require('nodejs-disks');
 // Get the express method
 const app = express();
 
-
-
 // Run the recorder and mixcloud server script
 require('./recorder.js');
-require('./mixcloud.js');
 
 // Get the settings data file
 var metadata = require('./metadata.json');
@@ -60,9 +59,6 @@ app.get("/api", function(req, res) {
   });
 });
 
-
-
-
 // The manager
 app.get("/manage", function(req, res) {
   njds.drives(
@@ -79,6 +75,7 @@ app.get("/manage", function(req, res) {
         res.render('manage',{
           uptime: processedUptime,
           listenUrl: settings.listenUrl,
+          account: settings.mixcloudAccount,
           usedSpace: data[0].usedPer + "%"
         });
       });
@@ -92,5 +89,6 @@ app.set('port', process.env.PORT || 80 );
 app.use(express.static('app/public'));
 // Init the server
 var server = app.listen(app.get('port'), function() {
-  console.log('Hyperlog is running on port ' + app.get('port') + '\nCtrl+C to terminate...');
+  console.log(`
+////////////////////////////////\n Hyperlog is running on port ` + app.get('port') + '\n////////////////////////////////\n\nCtrl+C to terminate...\n');
 });

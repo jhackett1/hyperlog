@@ -4,10 +4,11 @@ const http = require('http');
 const https = require('https');
 const cron = require('node-cron');
 
-const mixcloud = require('./mixcloud.js')
-
-// Get the local settings file in
+// Get the local settings file
 var settings = require('./settings.json');
+
+// Grab the mixcloud API modules
+var mixcloud = require('./mixcloud.js');
 
 // Some local constants
 const station = settings.stationName;
@@ -16,6 +17,9 @@ const recDir = './app/public/recordings/';
 const metadataFile = './app/metadata.json';
 // Save a five-day rolling log
 const archiveLimit = settings.archiveLimit;
+
+// Blank variable to store meta object
+let metaObject;
 
 // Do the recordings directory and metadata file exist and parse properly? If not, create them
 function checkIntegrity(){
@@ -38,7 +42,6 @@ function checkIntegrity(){
     console.log("Metadata file corrupted. Regenerating.")
     fs.writeFileSync(metadataFile, initialMeta)
   }
-
 }
 
 // Delete the oldest recording if the directory has more files than the specified limit
@@ -49,6 +52,7 @@ function cleanUp(fileToDelete){
     console.log("Deleted oldest file: "+ fileToDelete);
   })
 }
+
 
 // Take the input data and write it to the metadata file
 function writeMeta(fileName){
@@ -95,9 +99,9 @@ function writeMeta(fileName){
               "txDate": dateString,
               "showName": marconiResponse.show.title,
               "showDesc": marconiResponse.show.desc,
-              "permalink": marconiResponse.show.permalink
-              // 'icon': marconiResponse.show.icon_thumb,
-              // 'genre': marconiResponse.show.genre
+              "permalink": marconiResponse.show.permalink,
+              "icon": marconiResponse.show.icon_thumb,
+              "genre": marconiResponse.show.genre
             }
           }
           // Append that object to the metadata file
@@ -106,6 +110,7 @@ function writeMeta(fileName){
           fs.writeFile(metadataFile,newMetadata,function(){
             console.log("Metadata file updated!");
           })
+          metaObject = newRecording;
         } catch (e) {
           console.error(e.message);
         }
@@ -150,7 +155,13 @@ function record(duration){
       console.log('Finished writing file ' + fileName + '.mp3');
 
       // Now the file is done, upload it to Mixcloud IF it is a show
-      processUpload('testing', fileName);
+      if (metaObject.showName !== 'Jukebox') {
+        console.log('Uploading to Mixcloud...')
+        mixcloud.processUpload(metaObject);
+      } else {
+        // For debug
+        console.log('Jukebox: Skipping Mixcloud upload');
+      }
 
     },duration);
   });
@@ -158,6 +169,8 @@ function record(duration){
 
 // Check environment and begin recording
 function initialise(){
+    // Check Mixcloud authentication is working
+    mixcloud.checkAuth();
     // Check recordings dir exists
     checkIntegrity();
     // How many milliseconds are left until the top of the hour?
@@ -170,7 +183,6 @@ function initialise(){
     cron.schedule('0 * * * *', function(){
       record(60000);
     });
-
 }
 
 // Do everything

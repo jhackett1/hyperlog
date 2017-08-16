@@ -1,33 +1,46 @@
-// WHAT'S THE FLOW
-// |
-// |
-// |-> IS THE RECORDING FINISHED? (PUT IT IN THE SET-TIMEOUT)
-// |-> WAS THERE A SHOW? (WAS META RECORDED?)
-// |-> SHOULD THE SHOW BE PUBLISHED TO MIXCLOUD? (IS IT 'ACTIVE'?)
-// |-> IF META, GET META (TITLE, DESC, IMAGE, GENRE)
-// |-> PASS FILE AND META INTO THIS MODULE AND PROCESS THE UPLOAD
-// |
-// |______> FINALLY, WE'RE HERE
-
-
-// TODO TAKE IN MORE METADATA, INCLUDING IMAGE
-// PASS METADATA INTO THIS MODULE
-// INCLUDE 'ACTIVE'/PUBLISH OPTION ON WEBSITE
-
-
-
 // Hook into the Mixcloud API to process uploads
-module.exports = {};
 
 // Get the modules
 var request = require('request');
+// For debug - not needed when run as an include from recorder.js
 var fs = require('fs');
+// Grab the access token from the JSON file and save it as a var
+var accessToken = require('./accesstoken.json').access_token;
 
-// The access token
-var accessToken = '29x3RgLnjhc8baX2RbhdrxcdYvLNYyEW';
+// Function to check whether our accesstoken is valid and which account it is for
+function checkAuth(){
+  request({
+    // Endpoint
+    uri: "https://api.mixcloud.com/me/?access_token=" + accessToken,
+    // Verb
+    method: "GET",
+    // Form data - the two required fields, a readable file stream and the name of the show
+    // Optional callback on request completion. Was it successful?
+  }, function(error, response, body) {
+    // If there was an error, log it
+    if (error) {
+      return console.error('Mixcloud authentication failure:', error);
 
-function processUpload(name, fileName){
-  // Make the request
+    }
+    // Otherwise, just log the response
+    console.log('Hyperlog is authenticated with the ' + JSON.parse(body).name + ' Mixcloud account');
+
+  });
+}
+
+
+// Function to process an upload, accepting the metadata object of the recording as an argument
+function processUpload(metaObject){
+  // Grab the icon file, and when you've got it, continue the upload
+  request(metaObject.icon).pipe(fs.createWriteStream(__dirname + '/public/icon.jpg')
+    .on('finish', function(){
+      startUpload(metaObject)
+    }));
+}
+
+// Interact with the Mixcloud API
+function startUpload(metaObject){
+  // // // Make the request
   request({
     // Endpoint
     uri: "https://api.mixcloud.com/upload/?access_token=" + accessToken,
@@ -35,14 +48,28 @@ function processUpload(name, fileName){
     method: "POST",
     // Form data - the two required fields, a readable file stream and the name of the show
     formData: {
-      name: name,
-      mp3: fs.createReadStream(__dirname + filename)
+      name: metaObject.showName,
+      mp3: fs.createReadStream(__dirname + '/public/recordings/' + metaObject.fileName + '.mp3'),
+      picture: fs.createReadStream(__dirname + '/public/icon.jpg'),
+      description: metaObject.showDesc
     }
     // Optional callback on request completion. Was it successful?
   }, function(error, response, body) {
+    // If there was an error, log it
     if (error) {
-      return console.error('upload failed:', error);
+      return console.error('Upload failed:', error);
     }
+    // Otherwise, just log the response
     console.log(body);
   });
 }
+
+
+module.exports = {
+  processUpload: function(metaObject){
+    processUpload(metaObject)
+  },
+  checkAuth: function(){
+    checkAuth();
+  }
+};

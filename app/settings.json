@@ -1,5 +1,6 @@
 {
   "stationName": "smokeradio",
   "listenUrl": "http://77.68.10.108:8080/mobile",
-  "archiveLimit": 120
+  "archiveLimit": 24,
+  "mixcloudAccount": "Smoke Radio"
 }
