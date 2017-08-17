@@ -181,7 +181,7 @@ function initialise(){
     record(initialDur);
     // Run subsequent recordings on the top of the hour
     cron.schedule('0 * * * *', function(){
-      record(60000);
+      record(3600000);
     });
 }
 
